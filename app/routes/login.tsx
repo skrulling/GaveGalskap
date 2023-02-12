@@ -1,8 +1,9 @@
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { login } from "~/utils/session.server";
 import { refreshToken, supabaseToken } from "~/utils/cookie";
 import { Link } from "react-router-dom";
+import { useActionData } from "@remix-run/react";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
@@ -28,12 +29,18 @@ export const action = async ({ request }: ActionArgs) => {
       headers: headers,
     });
   }
+  console.log(error)
+  return {error}
 };
 
 export default function Login() {
+  const actionData = useActionData();
   return (
     <div>
       <h1>Logg deg inn 😎</h1>
+      {actionData?.error && (
+        <p>Error: {JSON.stringify(actionData.error.message)}</p>
+      )}
       <form method="post">
         <div>
           <label htmlFor="email-input">Epost</label>
