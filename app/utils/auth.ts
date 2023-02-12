@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { refreshToken, supabaseToken } from "./cookie";
 
 const getToken = async (args: LoaderArgs): Promise<string> => {
@@ -15,7 +15,7 @@ const getRefreshToken = async (args: LoaderArgs): Promise<string> => {
 
 
 export const isAuthenticated = async (
-  args: LoaderArgs,
+  args: LoaderArgs | ActionArgs,
 ) => {
   const token = await getToken(args);
   if (!token)

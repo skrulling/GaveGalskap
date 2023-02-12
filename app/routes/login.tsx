@@ -2,6 +2,7 @@ import { redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { login } from "~/utils/session.server";
 import { refreshToken, supabaseToken } from "~/utils/cookie";
+import { Link } from "react-router-dom";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
@@ -32,20 +33,21 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Login() {
   return (
     <div>
-      <h1>Login 😎</h1>
+      <h1>Logg deg inn 😎</h1>
       <form method="post">
         <div>
-          <label htmlFor="email-input">Email</label>
+          <label htmlFor="email-input">Epost</label>
           <input type="text" id="email-input" name="email" />
         </div>
         <div>
-          <label htmlFor="password-input">Password</label>
+          <label htmlFor="password-input">Passord</label>
           <input id="password-input" name="password" type="password" />
         </div>
         <button type="submit" className="button">
-          Submit
+          Logg inn 💎
         </button>
       </form>
+      <p>Om du ikke har en bruker enda, registrer deg <span><Link to={"/signup"}>HER</Link></span></p>
     </div>
   );
 }
