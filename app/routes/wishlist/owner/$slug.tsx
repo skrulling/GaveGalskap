@@ -54,7 +54,7 @@ export default function WishListOwner() {
           <h3>{gift.name}</h3>
         </div>
       ))}
-      <h1>Legg til et nytt ønske 🤑</h1>
+      <h1>Legg til nytt ønske 🤑</h1>
       <Form method="post">
         <p>
           <label>

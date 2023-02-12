@@ -24,7 +24,7 @@ export const loader = async (args: LoaderArgs) => {
 export default function Index() {
   const { yourWishlists, otherWishlists, error } = useLoaderData();
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }} >
       <h1>Velkommen til gavegalskap 🔥</h1>
       {error === null ? (
         <div>

@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,9 +8,25 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import globalStylesUrl from "./styles/global.css";
+import appStylesUrl from "./styles/app.css";
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "stylesheet",
+      href: globalStylesUrl,
+    },
+    {
+      rel: "stylesheet",
+      href: appStylesUrl,
+    },
+  ];
+};
+
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "gaveguiden",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -21,7 +37,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
