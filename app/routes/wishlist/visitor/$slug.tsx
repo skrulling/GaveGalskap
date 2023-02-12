@@ -37,8 +37,8 @@ export const action = async (args: ActionArgs) => {
     const { error } = await supabase
       .from("gift")
       .update({ taken: true })
-      .eq('id', giftId);
-    if(error) return error;
+      .eq("id", giftId);
+    if (error) return error;
     return redirect(`/wishlist/visitor/${args.params.slug}`);
   } else {
     return redirect("/login");
@@ -57,7 +57,20 @@ export default function WishListOwner() {
       {gifts.map((gift: any) => (
         <div key={gift.id}>
           <h3>{gift.name}</h3>
-          <p>Kjøpt: {gift.taken ? 'Noen har kjøpt denne gaven 🙌' : 'Ingen har kjøpt denne gaven enda 🛒'}</p>
+          <h5>{gift.description}</h5>
+          {gift.image && (
+            <>
+              <img src={gift.image} alt="gift" />
+              <br />
+            </>
+          )}
+          <a href={gift.url}>Lenke</a>
+          <p>
+            Kjøpt:{" "}
+            {gift.taken
+              ? "Noen har kjøpt denne gaven 🙌"
+              : "Ingen har kjøpt denne gaven enda 🛒"}
+          </p>
           {!gift.taken && (
             <Form method="post">
               <input type="hidden" name="id" value={gift.id} />
