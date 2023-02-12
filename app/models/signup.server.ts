@@ -1,4 +1,4 @@
-import { supabase } from "~/supabase";
+import { supabase } from "~/supabase.server";
 import type { UserSignup } from "~/types/userSignup";
 
 export async function signUp(user: Pick<UserSignup, "email" | "password">) {

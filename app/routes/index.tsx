@@ -1,15 +1,24 @@
+import { redirect } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { getGifts } from "./index.server";
+import { isAuthenticated } from "~/utils/auth";
+import { createNewClient } from "~/supabase.server";
 
-export const loader = async () => {
-  return getGifts();
+export const loader = async (args: LoaderArgs) => {
+  if (await isAuthenticated(args)) {
+    const supabase = await createNewClient(args);
+    let { data: gifts, error } = await supabase.from("gift").select("*");
+    return { gifts, error };
+  } else {
+    return redirect("/login");
+  }
 };
 
 export default function Index() {
-  const gifts = useLoaderData();
+  const { gifts, error } = useLoaderData();
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to gaveguiden 🔥</h1>
+      <h1>Welcome to gavegalskap 🔥</h1>
       <Link to="/signup">Sign up</Link>
       <ul>
         {gifts.map((gift: any, idx: number) => (
