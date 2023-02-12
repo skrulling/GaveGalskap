@@ -34,6 +34,7 @@ export default function Index() {
           {yourWishlists?.length < 1 && (
             <p>Du har ingen ønskelister 😥</p>
           )}
+          <Link to={"wishlist/new"}>Lag en ny ønskeliste</Link>
           {yourWishlists.map((wishlist: any, idx: number) => (
             <li key={idx}>
               <h1 key={`title-${wishlist.id}${idx}`}><Link to={`/wishlist/${wishlist.id}`}>{wishlist.title}</Link></h1>
