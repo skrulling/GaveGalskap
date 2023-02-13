@@ -10,6 +10,7 @@ import {
 
 import globalStylesUrl from "./styles/global.css";
 import appStylesUrl from "./styles/app.css";
+import styles from "./tailwind.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -21,6 +22,7 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: appStylesUrl,
     },
+    { rel: "stylesheet", href: styles },
   ];
 };
 
@@ -37,7 +39,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+      <body className="bg-gray-50 dark:bg-gray-900">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
