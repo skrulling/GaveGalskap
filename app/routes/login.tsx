@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { login } from "~/utils/session.server";
 import { refreshToken, supabaseToken } from "~/utils/cookie";
