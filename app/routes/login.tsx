@@ -2,8 +2,7 @@ import { json, redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { login } from "~/utils/session.server";
 import { refreshToken, supabaseToken } from "~/utils/cookie";
-import { Link } from "react-router-dom";
-import { Form, useActionData } from "@remix-run/react";
+import { Link, Form, useActionData } from "@remix-run/react";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
@@ -94,6 +93,7 @@ export default function Login() {
               Har du ikke bruker enda?{" "}
               <Link
                 to={"/signup"}
+                prefetch="intent"
                 className="font-medium text-primary-600 hover:underline dark:text-primary-500"
               >
                 Registrer deg

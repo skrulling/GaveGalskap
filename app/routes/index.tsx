@@ -44,6 +44,7 @@ export default function Index() {
                 <li key={idx}>
                   <h1 key={`title-${wishlist.id}${idx}`}>
                     <Link
+                      prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
                       className="font-bold text-lg text-primary-50 hover:underline"
                     >
@@ -67,6 +68,7 @@ export default function Index() {
                 <li key={idx}>
                   <h1 key={`title-${wishlist.id}${idx}`}>
                     <Link
+                      prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
                       className="font-bold text-lg text-primary-50 hover:underline"
                     >
