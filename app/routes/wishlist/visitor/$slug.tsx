@@ -76,7 +76,7 @@ export default function WishListOwner() {
             <div key={gift.id}>
               <div className="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white">
                 <h3 className="mb-4 text-2xl font-semibold">{gift.name}</h3>
-                <h5 className="font-light text-gray-500 sm:text-lg dark:text-gray-400">
+                <h5 className="font-light text-gray-500 sm:text-lg dark:text-gray-400 mb-5">
                   {gift.description}
                 </h5>
                 {gift.image && (
