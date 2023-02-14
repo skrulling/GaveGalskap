@@ -1,28 +1,35 @@
 import { ActionArgs, json, redirect } from "@remix-run/node";
-import { createNewClient } from "~/supabase.server";
+import { createNewClient, supabase } from "~/supabase.server";
 import { isAuthenticated } from "~/utils/auth";
 import type { LoaderArgs } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 
 export const loader = async (args: LoaderArgs) => {
   const slug = args?.params?.slug;
+  let giftsPromise = supabase
+    .from("gift")
+    .select("*")
+    .eq("wishlist", slug);
+
+  let wishlistPromise = supabase
+    .from("wishlist")
+    .select("title")
+    .eq("id, owner", slug)
+    .maybeSingle();
+
   if (await isAuthenticated(args)) {
     const supabase = await createNewClient(args);
-    let { data: gifts, error: giftsError } = await supabase
-      .from("gift")
-      .select("*")
-      .eq("wishlist", slug);
-    let { data: wishlist, error: wishlistError } = await supabase
-      .from("wishlist")
-      .select("*")
-      .eq("id", slug)
-      .maybeSingle();
     const user = await supabase.auth.getUser();
-    if (user.data.user?.id === wishlist.owner)
+    let { data: wishlist, error: wishlistError } = await wishlistPromise;
+    if (user.data.user?.id === wishlist?.owner)
       return redirect(`/wishlist/owner/${slug}`);
-    return json({ gifts: gifts, error: giftsError, wishlist, wishlistError });
+
+    let { data: gifts, error: giftsError } = await giftsPromise;
+    return json({ gifts: gifts, error: giftsError, wishlist, wishlistError, isAuth: true });
   } else {
-    return redirect("/login");
+    let { data: wishlist, error: wishlistError } = await wishlistPromise;
+    let { data: gifts, error: giftsError } = await giftsPromise;
+    return json({ gifts, wishlist, giftsError, wishlistError, isAuth: false });
   }
 };
 
@@ -46,7 +53,7 @@ export const action = async (args: ActionArgs) => {
 };
 
 export default function WishListOwner() {
-  const { gifts, error, wishlist, wishlistError } = useLoaderData();
+  const { gifts, error, wishlist, wishlistError, isAuth } = useLoaderData();
   const actionData = useActionData();
 
   return (
@@ -56,6 +63,11 @@ export default function WishListOwner() {
           <h1 className="text-white text-2xl font-bold m-10">
             {wishlist.title}
           </h1>
+          {!isAuth && (
+            <h3 className="text-white text-xl font-bold m-10">
+              <span><Link to="/login" prefetch="intent" className="text-xl font-bold text-primary-600 hover:underline dark:text-primary-500">Logg inn</Link> for å se om en gave er kjøpt av noen andre</span>
+            </h3>
+          )}
         </div>
         {error && <p>{error}</p>}
         {actionData?.error && <p>{JSON.stringify(actionData.error)}</p>}
@@ -74,13 +86,15 @@ export default function WishListOwner() {
                   </>
                 )}
                 <a href={gift.url} className="mt-3 font-medium text-primary-600 hover:underline dark:text-primary-500">Lenke</a>
-                <p className="m-5">
-                  Kjøpt:{" "}
-                  {gift.taken
-                    ? "Noen har kjøpt denne gaven 🙌"
-                    : "Ingen har kjøpt denne gaven enda 🛒"}
-                </p>
-                {!gift.taken && (
+                {isAuth && (
+                  <p className="m-5">
+                    Kjøpt:{" "}
+                    {gift.taken
+                      ? "Noen har kjøpt denne gaven 🙌"
+                      : "Ingen har kjøpt denne gaven enda 🛒"}
+                  </p>
+                )}
+                {(!gift.taken && isAuth) && (
                   <Form method="post">
                     <input type="hidden" name="id" value={gift.id} />
                     <button
