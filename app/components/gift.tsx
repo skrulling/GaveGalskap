@@ -22,13 +22,15 @@ export function Gift({ gift, isAuth, userId }: GiftProps): JSX.Element {
                     </>
                 )}
                 <a href={gift.url} target="_blank" className="mt-3 font-medium text-primary-600 hover:underline dark:text-primary-500">Lenke</a>
-                {isAuth && gift.taken_by !== userId ? (
+                {(isAuth && gift.taken_by !== userId) && (
                     <p className="m-5">
                         {gift.taken ?
                             "Noen har kjøpt denne gaven 🙌"
                             : "Ingen har kjøpt denne gaven enda 🛒"}
                     </p>
-                ) : (
+                )}
+                
+                {(isAuth && gift.taken_by === userId) && (
                     <>
                         <p className="m-5">
                             Du har kjøpt denne gaven!
@@ -47,6 +49,7 @@ export function Gift({ gift, isAuth, userId }: GiftProps): JSX.Element {
                     </>
 
                 )}
+                
                 {(!gift.taken && isAuth) && (
                     <Form method="post">
                         <input type="hidden" name="id" value={gift.id} />
