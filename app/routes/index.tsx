@@ -30,7 +30,7 @@ export const loader = async (args: LoaderArgs) => {
 export default function Index() {
   const { yourWishlists, otherWishlists, error } = useLoaderData();
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center p-6">
       <div>
         <h1 className="text-white text-2xl font-bold m-10">
           Velkommen til gavegalskap 🔥
