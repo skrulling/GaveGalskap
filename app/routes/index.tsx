@@ -32,7 +32,7 @@ export default function Index() {
   return (
     <div className="flex justify-center p-6">
       <div>
-        <h1 className="text-white text-2xl font-bold m-10">
+        <h1 className="text-gray-900 dark:text-white text-2xl font-bold m-10">
           Velkommen til gavegalskap 🔥
         </h1>
         {error === null ? (
@@ -42,7 +42,7 @@ export default function Index() {
               {yourWishlists?.length < 1 && <p>Du har ingen ønskelister 😥</p>}
               {yourWishlists.map((wishlist: any, idx: number) => (
                 <li key={idx}>
-                  <h1 key={`title-${wishlist.id}${idx}`}>
+                  <h1 className="text-gray-900 dark:text-white" key={`title-${wishlist.id}${idx}`}>
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
@@ -66,7 +66,7 @@ export default function Index() {
               )}
               {otherWishlists.map((wishlist: any, idx: number) => (
                 <li key={idx}>
-                  <h1 key={`title-${wishlist.id}${idx}`}>
+                  <h1 className="text-gray-900 dark:text-white" key={`title-${wishlist.id}${idx}`}>
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
