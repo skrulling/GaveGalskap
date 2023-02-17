@@ -14,8 +14,8 @@ export const loader = async (args: LoaderArgs) => {
 
   let wishlistPromise = supabase
     .from("wishlist")
-    .select("title")
-    .eq("id, owner", slug)
+    .select("title, owner")
+    .eq("id", slug)
     .maybeSingle();
 
   if (await isAuthenticated(args)) {
