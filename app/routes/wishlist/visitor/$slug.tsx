@@ -83,7 +83,7 @@ export default function WishListOwner() {
         {actionData?.error && <p>{JSON.stringify(actionData.error)}</p>}
         <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
           {gifts.map((gift: any) => (
-            <Gift gift={gift} isAuth={isAuth} userId={userId} />
+            userId === wishlist.owner ? <GiftOwner  gift={gift}/> : <Gift gift={gift} isAuth={isAuth} userId={userId} />
           ))}
         </div>
       </div>
