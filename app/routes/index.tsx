@@ -46,7 +46,7 @@ export default function Index() {
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
-                      className="font-bold text-lg text-primary-50 hover:underline"
+                      className="font-bold text-lg  hover:underline"
                     >
                       {wishlist.title}
                     </Link>
@@ -70,7 +70,7 @@ export default function Index() {
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
-                      className="font-bold text-lg text-primary-50 hover:underline"
+                      className="font-bold text-lg hover:underline"
                     >
                       {wishlist.title}
                     </Link>
