@@ -70,7 +70,7 @@ export default function WishListOwner() {
     <>
       <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
         <div className="max-w-screen-md mb-8 lg:mb-16">
-          <h1 className="text-white text-2xl font-bold m-10">
+          <h1 className="text-gray-900 dark:text-white text-2xl font-bold m-10">
             {wishlist.title}
           </h1>
           {!isAuth && (
