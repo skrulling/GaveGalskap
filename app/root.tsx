@@ -11,6 +11,7 @@ import {
 import globalStylesUrl from "./styles/global.css";
 import appStylesUrl from "./styles/app.css";
 import styles from "./tailwind.css";
+import { Navbar } from "./components/Navbar";
 
 export const links: LinksFunction = () => {
   return [
@@ -40,6 +41,7 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-gray-900">
+        <Navbar />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
