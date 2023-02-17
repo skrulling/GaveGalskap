@@ -9,6 +9,7 @@ export const loader = async (args: LoaderArgs) => {
   const slug = args?.params?.slug;
   if (await isAuthenticated(args)) {
     const supabase = await createNewClient(args);
+    const user = await supabase.auth.getUser();
     let { data: gifts, error: giftsError } = await supabase
       .from("gift")
       .select("*")
@@ -18,6 +19,10 @@ export const loader = async (args: LoaderArgs) => {
       .select("*")
       .eq("id", slug)
       .maybeSingle();
+
+    if (user.data.user?.id !== wishlist?.owner)
+      return redirect(`/wishlist/visitor/${slug}`);
+
     return json({ gifts: gifts, error: giftsError, wishlist, wishlistError });
   } else {
     return redirect("/login");
