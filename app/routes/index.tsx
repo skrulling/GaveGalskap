@@ -32,7 +32,7 @@ export default function Index() {
   return (
     <div className="flex justify-center p-6">
       <div>
-        <h1 className="text-gray-900 dark:text-white text-2xl font-bold m-10">
+        <h1 className="text-white text-2xl font-bold m-10">
           Velkommen til gavegalskap 🔥
         </h1>
         {error === null ? (
@@ -42,7 +42,7 @@ export default function Index() {
               {yourWishlists?.length < 1 && <p>Du har ingen ønskelister 😥</p>}
               {yourWishlists.map((wishlist: any, idx: number) => (
                 <li key={idx}>
-                  <h1 className="text-gray-900 dark:text-white" key={`title-${wishlist.id}${idx}`}>
+                  <h1 className="text-white" key={`title-${wishlist.id}${idx}`}>
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}
@@ -55,7 +55,7 @@ export default function Index() {
               ))}
             </ul>
             <Link to={"wishlist/new"}>
-              <button className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+              <button className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800">
                 Lag en ny ønskeliste
               </button>
             </Link>
@@ -66,7 +66,7 @@ export default function Index() {
               )}
               {otherWishlists.map((wishlist: any, idx: number) => (
                 <li key={idx}>
-                  <h1 className="text-gray-900 dark:text-white" key={`title-${wishlist.id}${idx}`}>
+                  <h1 className="text-white" key={`title-${wishlist.id}${idx}`}>
                     <Link
                       prefetch="intent"
                       to={`/wishlist/${wishlist.id}`}

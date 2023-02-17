@@ -4,6 +4,7 @@ import { isAuthenticated } from "~/utils/auth";
 import type { LoaderArgs } from "@remix-run/node";
 import { Link, useActionData, useLoaderData } from "@remix-run/react";
 import { Gift } from "~/components/gift";
+import { GiftOwner } from "~/components/giftOwner";
 
 export const loader = async (args: LoaderArgs) => {
   const slug = args?.params?.slug;
@@ -70,12 +71,12 @@ export default function WishListOwner() {
     <>
       <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
         <div className="max-w-screen-md mb-8 lg:mb-16">
-          <h1 className="text-gray-900 dark:text-white text-2xl font-bold m-10">
+          <h1 className="text-white text-2xl font-bold m-10">
             {wishlist.title}
           </h1>
           {!isAuth && (
             <h3 className="text-white text-xl font-bold m-10">
-              <span><Link to="/login" prefetch="intent" className="text-xl font-bold text-primary-600 hover:underline dark:text-primary-500">Logg inn</Link> for å se om en gave er kjøpt av noen andre</span>
+              <span><Link to="/login" prefetch="intent" className="text-xl font-bold hover:underline text-primary-500">Logg inn</Link> for å se om en gave er kjøpt av noen andre</span>
             </h3>
           )}
         </div>
