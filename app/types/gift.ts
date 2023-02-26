@@ -7,3 +7,11 @@ export interface Gift {
     taken?: boolean;
     taken_by?: string;
 }
+
+export interface SafeGift {
+    id?: string;
+    name?: string;
+    description?: string;
+    image?: string;
+    url?: string;
+}
