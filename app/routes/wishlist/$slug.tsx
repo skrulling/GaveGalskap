@@ -7,6 +7,8 @@ import { useLoaderData } from "@remix-run/react";
 import { GiftOwner } from "~/components/giftOwner";
 import { GiftVisitor } from "~/components/giftVisitor";
 import { AddWish } from "~/components/addWish";
+import { AskGpt, test } from "~/openai.server";
+import { useEffect, useState } from "react";
 
 export const loader = async (args: LoaderArgs) => {
   const slug = args?.params?.slug;
@@ -32,6 +34,11 @@ export const loader = async (args: LoaderArgs) => {
         image: gift.image,
         url: gift.url,
       }));
+      if (safeGifts !== undefined && safeGifts.length > 2) {
+        AskGpt(safeGifts).then((response) => {
+          console.log(response);
+        });
+      }
       return json({
         isOwner: true,
         isAuthenticated: true,
@@ -78,10 +85,19 @@ export const action = async (args: ActionArgs) => {
       const description = formData.get("description");
       const url = formData.get("url");
       const imageUrl = formData.get("imageUrl");
-      const { data, error } = await supabase.from('gift').insert([
-        { name: name, description: description, url: url, image: imageUrl, taken: false, wishlist: args.params.slug }
-      ])
-      return null
+      const { data, error } = await supabase
+        .from("gift")
+        .insert([
+          {
+            name: name,
+            description: description,
+            url: url,
+            image: imageUrl,
+            taken: false,
+            wishlist: args.params.slug,
+          },
+        ]);
+      return null;
     }
     if (intent === "take") {
       const giftId = formData.get("id");
@@ -98,14 +114,11 @@ export const action = async (args: ActionArgs) => {
         .from("gift")
         .update({ taken: false, taken_by: null })
         .eq("id", giftId);
-      return null
+      return null;
     } else {
       const id = formData.get("id");
-      const { data, error } = await supabase
-        .from('gift')
-        .delete()
-        .eq('id', id)
-      return null
+      const { data, error } = await supabase.from("gift").delete().eq("id", id);
+      return null;
     }
   } else {
     return redirect("/login");
@@ -117,20 +130,30 @@ export default function WishlistRoute() {
   return (
     <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
       <div className="max-w-screen-md mb-8 lg:mb-16">
-          <h1 className="text-white text-2xl font-bold m-10">
-          {wishlist.title}
-        </h1>
+        <h1 className="text-white text-2xl font-bold m-10">{wishlist.title}</h1>
       </div>
       <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
         {isOwner && <AddWish wishlistId={wishlist.id} />}
         {gifts.map((gift: any) => {
-          if(isOwner) {
-            return <GiftOwner gift={gift} wishlistId={wishlist.id} key={`${gift.id}`} />
+          if (isOwner) {
+            return (
+              <GiftOwner
+                gift={gift}
+                wishlistId={wishlist.id}
+                key={`${gift.id}`}
+              />
+            );
           } else {
-            return <GiftVisitor gift={gift} isAuth={isAuthenticated} userId={userId} key={`${gift.id}`}/> 
+            return (
+              <GiftVisitor
+                gift={gift}
+                isAuth={isAuthenticated}
+                userId={userId}
+                key={`${gift.id}`}
+              />
+            );
           }
-        }
-        )}
+        })}
       </div>
     </div>
   );

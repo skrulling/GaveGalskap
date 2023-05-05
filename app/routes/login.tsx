@@ -1,8 +1,8 @@
 import { redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { login } from "~/utils/session.server";
-import { refreshToken, supabaseToken } from "~/utils/cookie";
 import { Link, Form, useActionData } from "@remix-run/react";
+import { setSession } from "~/utils/auth";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
@@ -12,18 +12,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const { data, error } = await login({ email, password });
   if (data?.session) {
-    const headers = new Headers();
-    headers.append(
-      "Set-Cookie",
-      await supabaseToken.serialize(data.session?.access_token, {
-        expires: new Date(data?.session?.expires_at ?? 1),
-        maxAge: data.session?.expires_in,
-      })
-    );
-    headers.append(
-      "Set-Cookie",
-      await refreshToken.serialize(data.session?.refresh_token)
-    );
+    const headers = await setSession(data);
     return redirect("/", {
       headers: headers,
     });
