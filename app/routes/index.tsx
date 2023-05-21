@@ -5,7 +5,7 @@ import { isAuthenticated } from "~/utils/auth";
 import { createNewClient } from "~/supabase.server";
 
 export const loader = async (args: LoaderArgs) => {
-  if (await isAuthenticated(args)) {
+  if (await isAuthenticated(args, "/")) {
     const supabase = await createNewClient(args);
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userData) {
@@ -23,6 +23,7 @@ export const loader = async (args: LoaderArgs) => {
     }
     return { wishlists: null, error: userError };
   } else {
+    console.log("redirect to login")
     return redirect("/login");
   }
 };
