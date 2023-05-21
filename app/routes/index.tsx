@@ -23,6 +23,7 @@ export const loader = async (args: LoaderArgs) => {
     }
     return { wishlists: null, error: userError };
   } else {
+    console.log("redirect to login")
     return redirect("/login");
   }
 };

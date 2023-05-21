@@ -30,7 +30,7 @@ export const isAuthenticated = async (
   if (!token){
     try {
       const result = await refreshSession(args);
-      return result;
+      return result.result;
     } catch (error) {
       console.log(error)
       return false
