@@ -22,7 +22,7 @@ export async function test() {
 }
 
 export async function AskGpt(gifts: SafeGift[]): Promise<string> {
-    const prompt = `Jeg lager ønskeliste. Jeg trenger hjelp til å komme på 3 konkrete ønsker til. Kan du hjelpe meg, her er ønskene mine så langt: ${gifts.map(gift => gift.name)}. Svar alltid på formen 1. "forslag" 2. "forslag 3. "forslag"`;
+    const prompt = `Jeg lager ønskeliste. Jeg trenger hjelp til å komme på 3 konkrete ønsker. Kan du hjelpe meg, her er ønskene mine så langt: ${gifts.map(gift => gift.name)}. Svar kortfattet`;
     try {
         const response = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
