@@ -13,6 +13,7 @@
 ## Design/Visual
 
 - Wishlist should show owners name
+- Use masonry for grid that contains cards
 - Show name of person who bought gift
 
 # Version 1.0
