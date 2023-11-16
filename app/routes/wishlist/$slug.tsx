@@ -7,15 +7,14 @@ import { useLoaderData } from "@remix-run/react";
 import { GiftOwner } from "~/components/giftOwner";
 import { GiftVisitor } from "~/components/giftVisitor";
 import { AddWish } from "~/components/addWish";
-import { AskGpt, test } from "~/openai.server";
-import { useEffect, useState } from "react";
 import Suggestions from "../suggestions";
+import { WishlistTitleEditor } from "~/components/wishlistTitleEditor";
 
 export const loader = async (args: LoaderArgs) => {
   const slug = args?.params?.slug;
-  let giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
+  const giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
 
-  let wishlistPromise = supabase
+  const wishlistPromise = supabase
     .from("wishlist")
     .select("title, owner, id")
     .eq("id", slug)
@@ -102,6 +101,16 @@ export const action = async (args: ActionArgs) => {
         .eq("id", giftId);
       return null;
     }
+    if (intent === "editTitle") {
+      const newTitle = formData.get("newTitle");
+      const wishlistId = formData.get("wishlistId");
+
+      await supabase
+        .from("wishlist")
+        .update({ title: newTitle })
+        .eq("id", wishlistId);
+      return null;
+    }
     if (intent === "undo") {
       const giftId = formData.get("id");
       const { error } = await supabase
@@ -125,7 +134,7 @@ export default function WishlistRoute() {
   return (
     <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
       <div className="max-w-screen-md mb-8 lg:mb-16">
-        <h1 className="text-white text-2xl font-bold m-10">{wishlist.title}</h1>
+      <WishlistTitleEditor initialTitle={wishlist.title} wishlistId={wishlist.id} isOwner={isOwner} />
       </div>
       <div className="space-y-8 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-12 md:space-y-0">
         {isOwner && <AddWish wishlistId={wishlist.id} />}

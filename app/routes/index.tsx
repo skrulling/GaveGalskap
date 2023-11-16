@@ -81,7 +81,7 @@ export default function Index() {
             </ul>
           </div>
         ) : (
-          <p>{error}</p>
+          <p>{error ? error.message || 'An unknown error occurred' : null}</p>
         )}
       </div>
     </div>
