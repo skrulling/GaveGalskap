@@ -3,11 +3,16 @@
 ## Functional
 
 - [Optimisitc UI](https://remix.run/docs/en/v1/guides/optimistic-ui)
-- Use refresh token to stay logged in for longer
 - User should be able to add a bought gift to wishlist that is displayed to logged in visitors
 - User should be able to edit own wishes
-- User should be able to edit own wishlist name/title
 - User object should have a name connected
+- Enter to log in
+- Clear input fields after gift is added
+- Spinners on all buttons that trigger loading
+
+  ## Bugs
+
+- Spinner on add gift is way too big
 
 
 ## Design/Visual
