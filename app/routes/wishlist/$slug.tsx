@@ -9,8 +9,26 @@ import { GiftVisitor } from "~/components/giftVisitor";
 import { AddWish } from "~/components/addWish";
 import Suggestions from "../suggestions";
 import { WishlistTitleEditor } from "~/components/wishlistTitleEditor";
+import { createServerClient, parse, serialize } from "@supabase/ssr";
 
 export const loader = async (args: LoaderArgs) => {
+  const cookies = parse(args.request.headers.get('Cookie') ?? '')
+  const headers = new Headers()
+
+  const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+    cookies: {
+      get(key) {
+        return cookies[key]
+      },
+      set(key, value, options) {
+        headers.append('Set-Cookie', serialize(key, value, options))
+      },
+      remove(key, options) {
+        headers.append('Set-Cookie', serialize(key, '', options))
+      },
+    },
+  })
+  const session = await supabase.auth.getSession()
   const slug = args?.params?.slug;
   const giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
 
@@ -20,8 +38,7 @@ export const loader = async (args: LoaderArgs) => {
     .eq("id", slug)
     .maybeSingle();
 
-  if (await isAuthenticated(args)) {
-    const supabase = await createNewClient(args);
+  if (session.data.session !== null) {
     const user = await supabase.auth.getUser();
     let { data: wishlist, error: wishlistError } = await wishlistPromise;
     let { data: gifts, error: giftsError } = await giftsPromise;

@@ -1,12 +1,29 @@
 import { redirect } from "@remix-run/node";
 import type { LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { isAuthenticated } from "~/utils/auth";
-import { createNewClient } from "~/supabase.server";
+import { createServerClient, parse, serialize } from "@supabase/ssr";
 
-export const loader = async (args: LoaderArgs) => {
-  if (await isAuthenticated(args, "/")) {
-    const supabase = await createNewClient(args);
+export async function loader({ request }: LoaderArgs){
+  const cookies = parse(request.headers.get('Cookie') ?? '')
+  const headers = new Headers()
+
+  const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+    cookies: {
+      get(key) {
+        return cookies[key]
+      },
+      set(key, value, options) {
+        headers.append('Set-Cookie', serialize(key, value, options))
+      },
+      remove(key, options) {
+        headers.append('Set-Cookie', serialize(key, '', options))
+      },
+    },
+  })
+  const session = await supabase.auth.getSession()
+  console.log(session)
+
+  if (session.data.session !== null) {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userData) {
       const userId = userData.user?.id;
@@ -26,7 +43,7 @@ export const loader = async (args: LoaderArgs) => {
     console.log("redirect to login")
     return redirect("/login");
   }
-};
+}
 
 export default function Index() {
   const { yourWishlists, otherWishlists, error } = useLoaderData();

@@ -1,18 +1,34 @@
 import { redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
-import { login } from "~/utils/session.server";
 import { Link, Form, useActionData } from "@remix-run/react";
-import { setSession } from "~/utils/auth";
+import { createServerClient, parse, serialize } from '@supabase/ssr';
 
 export const action = async ({ request }: ActionArgs) => {
+  const cookies = parse(request.headers.get('Cookie') ?? '')
+  const headers = new Headers()
+
+  const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+    cookies: {
+      get(key) {
+        return cookies[key]
+      },
+      set(key, value, options) {
+        headers.append('Set-Cookie', serialize(key, value, options))
+      },
+      remove(key, options) {
+        headers.append('Set-Cookie', serialize(key, '', options))
+      },
+    },
+  })
   const formData = await request.formData();
 
   const email = formData.get("email");
   const password = formData.get("password");
 
-  const { data, error } = await login({ email, password });
+  const { data, error} = await supabase.auth.signInWithPassword({email: email as string, password: password as string})
+  console.log(data)
   if (data?.session) {
-    const headers = await setSession(data);
+    await supabase.auth.setSession(data.session)
     return redirect("/", {
       headers: headers,
     });
