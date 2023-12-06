@@ -1,10 +1,11 @@
-import { ActionArgs, LoaderArgs, redirect } from "@remix-run/node";
+import { type ActionArgs, type LoaderArgs, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import { createNewClient } from "~/supabase.server";
+import { createSupabase } from "~/supabase.server";
 import { isAuthenticated } from "~/utils/auth";
 
 export const loader = async (args: LoaderArgs) => {
-  if (await isAuthenticated(args)) {
+  const supabase = createSupabase(args.request);
+  if (await isAuthenticated(supabase)) {
     return null;
   } else {
     return redirect("/login");
@@ -12,8 +13,8 @@ export const loader = async (args: LoaderArgs) => {
 };
 
 export const action = async (args: ActionArgs) => {
-  if (await isAuthenticated(args)) {
-    const supabase = await createNewClient(args);
+  const supabase = createSupabase(args.request);
+  if (await isAuthenticated(supabase)) {
     const formData = await args.request.formData();
     const user = await supabase.auth.getUser();
 

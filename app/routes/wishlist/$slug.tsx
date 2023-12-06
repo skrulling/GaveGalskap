@@ -1,6 +1,5 @@
-import { createNewClient, supabase } from "~/supabase.server";
-import { isAuthenticated } from "~/utils/auth";
-import { ActionArgs, LoaderArgs, redirect } from "@remix-run/node";
+import { createSupabase } from "~/supabase.server";
+import { type ActionArgs, type LoaderArgs, redirect } from "@remix-run/node";
 import type { Gift, SafeGift } from "~/types/gift";
 import { json } from "react-router";
 import { useLoaderData } from "@remix-run/react";
@@ -9,26 +8,10 @@ import { GiftVisitor } from "~/components/giftVisitor";
 import { AddWish } from "~/components/addWish";
 import Suggestions from "../suggestions";
 import { WishlistTitleEditor } from "~/components/wishlistTitleEditor";
-import { createServerClient, parse, serialize } from "@supabase/ssr";
+import { isAuthenticated } from "~/utils/auth";
 
 export const loader = async (args: LoaderArgs) => {
-  const cookies = parse(args.request.headers.get('Cookie') ?? '')
-  const headers = new Headers()
-
-  const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-    cookies: {
-      get(key) {
-        return cookies[key]
-      },
-      set(key, value, options) {
-        headers.append('Set-Cookie', serialize(key, value, options))
-      },
-      remove(key, options) {
-        headers.append('Set-Cookie', serialize(key, '', options))
-      },
-    },
-  })
-  const session = await supabase.auth.getSession()
+  const supabase = createSupabase(args.request);
   const slug = args?.params?.slug;
   const giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
 
@@ -38,10 +21,10 @@ export const loader = async (args: LoaderArgs) => {
     .eq("id", slug)
     .maybeSingle();
 
-  if (session.data.session !== null) {
+  if (await isAuthenticated(supabase)) {
     const user = await supabase.auth.getUser();
-    let { data: wishlist, error: wishlistError } = await wishlistPromise;
-    let { data: gifts, error: giftsError } = await giftsPromise;
+    let { data: wishlist } = await wishlistPromise;
+    let { data: gifts } = await giftsPromise;
 
     if (user?.data.user?.id === wishlist?.owner) {
       const safeGifts: SafeGift[] | undefined = gifts?.map((gift: Gift) => ({
@@ -68,8 +51,8 @@ export const loader = async (args: LoaderArgs) => {
       });
     }
   } else {
-    let { data: wishlist, error: wishlistError } = await wishlistPromise;
-    let { data: gifts, error: giftsError } = await giftsPromise;
+    let { data: wishlist } = await wishlistPromise;
+    let { data: gifts } = await giftsPromise;
     const safeGifts: SafeGift[] | undefined = gifts?.map((gift: Gift) => ({
       id: gift.id,
       name: gift.name,
@@ -88,8 +71,8 @@ export const loader = async (args: LoaderArgs) => {
 };
 
 export const action = async (args: ActionArgs) => {
-  if (await isAuthenticated(args)) {
-    const supabase = await createNewClient(args);
+  const supabase = createSupabase(args.request);
+  if (await isAuthenticated(supabase)) {
     const formData = await args.request.formData();
     const intent = formData.get("intent");
     if (intent === "add") {
@@ -97,7 +80,7 @@ export const action = async (args: ActionArgs) => {
       const description = formData.get("description");
       const url = formData.get("url");
       const imageUrl = formData.get("imageUrl");
-      const { data, error } = await supabase.from("gift").insert([
+      await supabase.from("gift").insert([
         {
           name: name,
           description: description,
@@ -112,7 +95,7 @@ export const action = async (args: ActionArgs) => {
     if (intent === "take") {
       const giftId = formData.get("id");
       const user = await supabase.auth.getUser();
-      const { error } = await supabase
+      await supabase
         .from("gift")
         .update({ taken: true, taken_by: user.data.user?.id ?? null })
         .eq("id", giftId);
@@ -130,14 +113,14 @@ export const action = async (args: ActionArgs) => {
     }
     if (intent === "undo") {
       const giftId = formData.get("id");
-      const { error } = await supabase
+      await supabase
         .from("gift")
         .update({ taken: false, taken_by: null })
         .eq("id", giftId);
       return null;
     } else {
       const id = formData.get("id");
-      const { data, error } = await supabase.from("gift").delete().eq("id", id);
+      await supabase.from("gift").delete().eq("id", id);
       return null;
     }
   } else {

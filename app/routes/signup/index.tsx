@@ -2,14 +2,19 @@ import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { signUp } from "~/models/signup.server";
+import { createSupabase } from "~/supabase.server";
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
 
   const email = formData.get("email");
   const password = formData.get("password");
+  const supabase = createSupabase(request);
 
-  await signUp({ email, password });
+  if(email === null || password === null) return redirect("/login")
+  const stringEmail = email as string;
+  const stringPass = password as string;
+  await signUp({ email: stringEmail, password: stringPass }, supabase);
 
   return redirect("/");
 };
