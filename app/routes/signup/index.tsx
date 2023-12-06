@@ -9,7 +9,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const email = formData.get("email");
   const password = formData.get("password");
-  const supabase = createSupabase(request);
+  const { client: supabase } = createSupabase(request);
 
   if(email === null || password === null) return redirect("/login")
   const stringEmail = email as string;

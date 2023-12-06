@@ -1,12 +1,22 @@
 import { useFetcher } from "@remix-run/react";
-import { Spinner } from "./spinner";
+import { LoadingButton } from "./loadingButton";
+import { useEffect, useRef } from "react";
 
 interface AddWishProps {
   wishlistId: number;
 }
 
 export function AddWish({ wishlistId }: AddWishProps): JSX.Element {
+  const formRef = useRef<HTMLFormElement>(null);
   const fetcher = useFetcher();
+  const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
+
+  useEffect(() => {
+    if(fetcher.state === "submitting") {
+      formRef.current?.reset();
+    }
+  }, [fetcher])
+
   return (
     <div className="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
       <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -14,6 +24,7 @@ export function AddWish({ wishlistId }: AddWishProps): JSX.Element {
           Legg til ønske
         </h1>
         <fetcher.Form
+          ref={formRef}
           className="space-y-4 md:space-y-6"
           method="post"
           action={`/wishlist/${wishlistId}`}
@@ -66,10 +77,10 @@ export function AddWish({ wishlistId }: AddWishProps): JSX.Element {
             name="intent"
             value="add"
             disabled={fetcher.state === "submitting"}
-            className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800"
+            className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800"
             type="submit"
           >
-            {fetcher.state === "submitting" ? <Spinner /> : "Legg til ønske"}
+            {isLoading && <LoadingButton />}Legg til ønske
           </button>
         </fetcher.Form>
       </div>

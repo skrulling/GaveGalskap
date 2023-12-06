@@ -1,44 +1,31 @@
 import { redirect } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
-import { Link, Form, useActionData } from "@remix-run/react";
-import { createServerClient, parse, serialize } from '@supabase/ssr';
+import { Link, Form, useActionData, useNavigation } from "@remix-run/react";
+import { LoadingButton } from "~/components/loadingButton";
+import { createSupabase } from "~/supabase.server";
 
 export const action = async ({ request }: ActionArgs) => {
-  const cookies = parse(request.headers.get('Cookie') ?? '')
-  const headers = new Headers()
-
-  const supabase = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-    cookies: {
-      get(key) {
-        return cookies[key]
-      },
-      set(key, value, options) {
-        headers.append('Set-Cookie', serialize(key, value, options))
-      },
-      remove(key, options) {
-        headers.append('Set-Cookie', serialize(key, '', options))
-      },
-    },
-  })
+  console.log("Logging in")
+  const { client: supabase, headers } = createSupabase(request);
   const formData = await request.formData();
 
   const email = formData.get("email");
   const password = formData.get("password");
 
   const { data, error} = await supabase.auth.signInWithPassword({email: email as string, password: password as string})
-  console.log(data)
   if (data?.session) {
+    console.log(headers)
     await supabase.auth.setSession(data.session)
-    return redirect("/", {
-      headers: headers,
-    });
+    return redirect("/", { headers });
   }
-  console.log(error);
   return { error };
 };
 
 export default function Login() {
+  const navigation = useNavigation();
   const actionData = useActionData();
+  const isSubmitting =
+    navigation.formAction === "/login";
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
@@ -89,10 +76,11 @@ export default function Login() {
               </Link>
             </div>
             <button
+              disabled={isSubmitting}
               type="submit"
               className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800"
             >
-              Logg inn
+              {isSubmitting && <LoadingButton />}Logg inn
             </button>
             <p className="text-sm font-light text-gray-400">
               Har du ikke bruker enda?{" "}

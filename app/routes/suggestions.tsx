@@ -32,13 +32,13 @@ const Suggestions: React.FC<SuggestionsProps> = ({ gifts }) => {
   return (
     <div className="flex flex-col justify-between p-6 mx-auto max-w-lg text-center rounded-lg border shadow border-gray-600 xl:p-8 bg-gray-800 text-white">
       <h3 className="mb-4 text-2xl font-semibold">Gaveforslag</h3>
-      {fetcher.data && <TextList inputText={fetcher.data} />}
+      {fetcher.data ? <TextList inputText={fetcher.data} /> : <h5 className="font-bold">Du må ha minst 2 ønsker før vi henter forslag automatisk. Klikk knappen under om du vil hente forslag uansett 🙌</h5>}
       <fetcher.Form ref={formRef} method="post" action="/suggestions">
         <input type="hidden" name="gifts" value={JSON.stringify(gifts)} />
         <button
           type="submit"
           disabled={fetcher.state === "submitting"}
-          className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 active:bg-blue-800 focus:outline-none"
+          className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none"
         >
           {fetcher.state === "submitting" ? (
             <>

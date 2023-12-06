@@ -11,7 +11,7 @@ import { WishlistTitleEditor } from "~/components/wishlistTitleEditor";
 import { isAuthenticated } from "~/utils/auth";
 
 export const loader = async (args: LoaderArgs) => {
-  const supabase = createSupabase(args.request);
+  const { client: supabase } = createSupabase(args.request);
   const slug = args?.params?.slug;
   const giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
 
@@ -71,7 +71,7 @@ export const loader = async (args: LoaderArgs) => {
 };
 
 export const action = async (args: ActionArgs) => {
-  const supabase = createSupabase(args.request);
+  const { client: supabase } = createSupabase(args.request);
   if (await isAuthenticated(supabase)) {
     const formData = await args.request.formData();
     const intent = formData.get("intent");

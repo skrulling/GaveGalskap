@@ -1,11 +1,16 @@
+import { PlusIcon } from "@heroicons/react/24/solid";
 import { redirect } from "@remix-run/node";
 import type { LoaderArgs } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigation } from "@remix-run/react";
+import React from "react";
+import { IconButton } from "~/components/IconButton";
+import { LoadingButton } from "~/components/loadingButton";
 import { createSupabase } from "~/supabase.server";
 
-export async function loader({ request }: LoaderArgs){
-  const supabase = createSupabase(request)
-  const session = await supabase.auth.getSession()
+export async function loader({ request }: LoaderArgs) {
+  const { client: supabase } = createSupabase(request);
+  const session = await supabase.auth.getSession();
+  console.log(session.data);
 
   if (session.data.session !== null) {
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -24,13 +29,15 @@ export async function loader({ request }: LoaderArgs){
     }
     return { wishlists: null, error: userError };
   } else {
-    console.log("redirect to login")
+    console.log("redirect to login");
     return redirect("/login");
   }
 }
 
 export default function Index() {
   const { yourWishlists, otherWishlists, error } = useLoaderData();
+  const navigation = useNavigation();
+  const Icon: React.FC = () => <PlusIcon className="h-5 w-5" />;
   return (
     <div className="flex justify-center p-6">
       <div>
@@ -57,12 +64,17 @@ export default function Index() {
               ))}
             </ul>
             <Link to={"wishlist/new"}>
-              <button className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800">
-                Lag en ny ønskeliste
-              </button>
+              <IconButton
+                isSubmitting={navigation.state === "submitting"}
+                text="Lag en ny ønskeliste"
+                isWide={false}
+                Icon={Icon}
+              />
             </Link>
             <ul>
-              <h1 className="text-gray-500 text-xl mb-5 mt-10">Andre ønskelister</h1>
+              <h1 className="text-gray-500 text-xl mb-5 mt-10">
+                Andre ønskelister
+              </h1>
               {otherWishlists?.length < 1 && (
                 <p>Finner ingen andre ønskelister 😥</p>
               )}
@@ -82,7 +94,7 @@ export default function Index() {
             </ul>
           </div>
         ) : (
-          <p>{error ? error.message || 'An unknown error occurred' : null}</p>
+          <p>{error ? error.message || "An unknown error occurred" : null}</p>
         )}
       </div>
     </div>
