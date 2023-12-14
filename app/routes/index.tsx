@@ -4,21 +4,21 @@ import type { LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData, useNavigation } from "@remix-run/react";
 import React from "react";
 import { IconButton } from "~/components/IconButton";
-import { LoadingButton } from "~/components/loadingButton";
 import { createSupabase } from "~/supabase.server";
+import { isAuthenticated } from "~/utils/auth";
 
 export async function loader({ request }: LoaderArgs) {
   const { client: supabase } = createSupabase(request);
-  const session = await supabase.auth.getSession();
-  console.log(session.data);
 
-  if (session.data.session !== null) {
+  if (await isAuthenticated(supabase)) {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userData) {
       const userId = userData.user?.id;
+      console.time("gifts")
       let { data: wishlist, error: wishlistError } = await supabase
         .from("wishlist")
         .select("*");
+      console.timeEnd("gifts")
       const yourWishlists = wishlist?.filter(
         (list: any) => list.owner === userId
       );

@@ -6,15 +6,17 @@ import { useLoaderData } from "@remix-run/react";
 import { GiftOwner } from "~/components/giftOwner";
 import { GiftVisitor } from "~/components/giftVisitor";
 import { AddWish } from "~/components/addWish";
-import Suggestions from "../suggestions";
 import { WishlistTitleEditor } from "~/components/wishlistTitleEditor";
 import { isAuthenticated } from "~/utils/auth";
+import Suggestions from "../suggestions";
 
 export const loader = async (args: LoaderArgs) => {
   const { client: supabase } = createSupabase(args.request);
   const slug = args?.params?.slug;
+  console.time("gift");
   const giftsPromise = supabase.from("gift").select("*").eq("wishlist", slug);
 
+  console.time("wishlist");
   const wishlistPromise = supabase
     .from("wishlist")
     .select("title, owner, id")
@@ -24,7 +26,9 @@ export const loader = async (args: LoaderArgs) => {
   if (await isAuthenticated(supabase)) {
     const user = await supabase.auth.getUser();
     let { data: wishlist } = await wishlistPromise;
+    console.timeEnd("wishlist");
     let { data: gifts } = await giftsPromise;
+    console.timeEnd("gift");
 
     if (user?.data.user?.id === wishlist?.owner) {
       const safeGifts: SafeGift[] | undefined = gifts?.map((gift: Gift) => ({
