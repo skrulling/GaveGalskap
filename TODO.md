@@ -7,6 +7,7 @@
 - User should be able to edit own wishes
 - User object should have a name connected
 - Spinners on all buttons that trigger loading
+- Hide taken gifts more, should probably be removed from public list
 
  ## Bugs
 
